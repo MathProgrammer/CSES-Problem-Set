@@ -57,7 +57,8 @@ Iterate over all prefixes of N. Let the current prefix be of length i
 Iterate over all digits d in [0, N[i] - 1]
 If the first i digits of X are 'good', then we can choose the suffix freely. 
 Each position of the suffix has 9 choices - anything other than the preceeding digit. 
-So there are 9^L integers x, with the common suffix [0, N[i] - 1] and X[i] = d and suffix length L which satisfy the condition.
+So there are 9^L integers x, with the common prefix of the first (i - 1) digits and X[i] = d 
+and suffix length L which satisfy the condition.
 
 Stop when we find any prefix that does not satisfy the condition. 
 There is no point in checking the next prefix since every prefix that comes after this will contain this prefix and will not be good. 
