@@ -1,0 +1,93 @@
+First of all, let us try to count the number of good integers strictly smaller than N. 
+
+We can use this to find the number of good integers in the range [L, R] by Answer[0, R + 1] - Answer[0, L]
+
+-----
+
+Integers smaller than N come in one of two formats 
+
+1. They have fewer digits than N (leading 0s)
+2. They have the same number of digits as N. 
+
+We will discuss the second case in a while. 
+
+----
+
+long long numbers_before(string N)
+{
+    return numbers_before_with_same_digits(N) + numbers_before_with_leading_0s(N);
+}
+
+-----
+
+How many integers are there with fewer digits than N ? 
+
+Let x be a good integer < N with fewer digits. 
+
+If x is a single digit, then there are 10 choices for x. 
+If x is more than a single digit, then the first digit has to be in between [1, 9]. 
+Every digit afterwards will also have 9 choices as it cannot be equal to the preceeding digit. 
+So it is 9^L, where L is the length of x
+
+We will iterate over all L in [1, Length(N) - 1]
+
+-----
+
+long long numbers_before_with_leading_0s(string N)
+{
+    long long answer = 0;
+    for(int i = 1; i < N.size(); i++)
+    {
+        int digits_from_here = N.size() - 1 - (i - 1);
+        answer += (i == N.size() - 1 ? 10 : power(9, digits_from_here));
+    }
+    return answer;
+}
+
+------
+
+The second case is when an integer is < N and then has an equal number of digits. 
+
+This means that x 
+1. Matches some non empty prefix of N 
+2. X[i] < N[i], at the first i where X[i] =/= N[i]
+3. The suffix of X can be chosen freely. 
+
+Iterate over all prefixes of N. Let the current prefix be of length i
+Iterate over all digits d in [0, N[i] - 1]
+If the first i digits of X are 'good', then we can choose the suffix freely. 
+Each position of the suffix has 9 choices - anything other than the preceeding digit. 
+So there are 9^L integers x, with the common suffix [0, N[i] - 1] and X[i] = d and suffix length L which satisfy the condition.
+
+Stop when we find any prefix that does not satisfy the condition. 
+There is no point in checking the next prefix since every prefix that comes after this will contain this prefix and will not be good. 
+
+------
+
+long long numbers_before_with_same_digits(string N)
+{
+    long long answer = 0;
+    int prefix_good = true;
+    for(int i = 0; i < N.size() && prefix_good; i++)
+    {
+        char starting_for_this_position = (i == 0 && N.size() > 1 ? '1' : '0');
+        for(char current_digit = starting_for_this_position; current_digit < N[i]; current_digit++)
+        {
+            if(i > 0 && current_digit == N[i - 1])
+            {
+                continue;
+            }
+
+            int remaining_digits = N.size() - 1 - i;
+            answer += power(9, remaining_digits);
+        }
+
+        if(i > 0 && N[i] == N[i - 1])
+        {
+            prefix_good = false;
+        }
+    }
+    return answer;
+}
+
+-----
