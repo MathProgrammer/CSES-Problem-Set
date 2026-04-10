@@ -1,0 +1,54 @@
+Let f(i, j) be the number of ways to reach (i, j) 
+
+We can reach from either (i - 1, j) or (i, j - 1) 
+
+Check each of it's parents if they are blocked or unblocked. 
+----
+
+int is_inside(int r, int c, int rows, int columns)
+{
+    return (0 <= r && r < rows && 0 <= c && c < columns);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+
+    int rows = n, columns = n;
+    const char BLOCKED = '*', FREE = '.';
+    vector <string> grid(rows);
+    for(int i = 0; i < rows; i++)
+    {
+        cin >> grid[i];
+    }
+
+    const int MOD = 1e9 + 7, NO_OF_NEIGHBOURS = 2;
+    vector <int> neighbour_r = vector <int> {-1, 0};
+    vector <int> neighbour_c = vector <int> {0, -1};
+    vector <vector <int> > no_of_ways(rows, vector <int> (columns));
+    no_of_ways[0][0] = (grid[0][0] == BLOCKED ? 0 : 1);
+    for(int r = 0; r < rows; r++)
+    {
+        for(int c = 0; c < columns; c++)
+        {
+            if(grid[r][c] == FREE)
+            {
+                for(int i = 0; i < NO_OF_NEIGHBOURS; i++)
+                {
+                    int previous_r = r + neighbour_r[i];
+                    int previous_c = c + neighbour_c[i];
+
+                    if(is_inside(previous_r, previous_c, rows, columns))
+                    {
+                        no_of_ways[r][c] += no_of_ways[previous_r][previous_c];
+                        no_of_ways[r][c] %= MOD;
+                    }
+                }
+            }
+        }
+    }
+
+    cout << no_of_ways[rows - 1][columns - 1] << "\n";
+    return 0;
+}

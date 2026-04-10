@@ -1,0 +1,50 @@
+Let f(i, j) be the number of ways of filling the first i elements with A[i] = j 
+
+Now, there are 3 options for A[i - 1], it can be one of {j - 1, j, j + 1}. 
+
+If A[i] = 0, then we can iterate over all possible j. 
+Otherwise, we only need to check the 3 possible previous states. 
+
+-----
+
+int main()
+{
+    int no_of_elements, element_limit;
+    cin >> no_of_elements >> element_limit;
+
+    vector <int> A(no_of_elements + 1);
+    for(int i = 1; i <= no_of_elements; i++)
+    {
+        cin >> A[i];
+    }
+
+    const int MOD = 1e9 + 7;
+    vector <vector <long long> > no_of_ways(no_of_elements + 1, vector <long long> (element_limit + 2));
+    for(int i = 1; i <= no_of_elements; i++)
+    {
+        if(A[i] != 0)
+        {
+            no_of_ways[i][A[i]] = (i == 1 ? 1 : no_of_ways[i - 1][A[i] - 1] + no_of_ways[i - 1][A[i]] + no_of_ways[i - 1][A[i] + 1]);
+        }
+        else
+        {
+            for(int j = 1; j <= element_limit; j++)
+            {
+                no_of_ways[i][j] = (i == 1 ? 1 : no_of_ways[i - 1][j - 1] + no_of_ways[i - 1][j] + no_of_ways[i - 1][j + 1]);
+                no_of_ways[i][j] %= MOD;
+            }
+        }
+    }
+
+    long long answer = 0;
+    for(int j = 1; j <= element_limit; j++)
+    {
+        answer += no_of_ways[no_of_elements][j];
+        answer %= MOD;
+    }
+
+    cout << answer << "\n";
+
+    return 0;
+}
+

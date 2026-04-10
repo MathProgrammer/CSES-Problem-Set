@@ -1,0 +1,40 @@
+Let f(i) be the minimum steps to reach i  from n. 
+
+f(i) = min{1 + f(i - d)}, for each digit of i. 
+
+----
+
+vector <int> get_digits(int n)
+{
+    vector <int> digits;
+    while(n > 0)
+    {
+        int last_digit = n%10;
+
+        digits.push_back(last_digit);
+        n /= 10;
+    }
+
+    return digits;
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+
+    const int oo = 1e9 + 9;
+    vector <int> minimum_steps(n + 1, oo);
+    minimum_steps[0] = 0;
+    for(int i = 1; i <= n; i++)
+    {
+        vector <int> digits = get_digits(i);
+        for(int d : digits)
+        {
+            minimum_steps[i] = min(minimum_steps[i], 1 + minimum_steps[i - d]);
+        }
+    }
+
+    cout << minimum_steps[n] << "\n";
+    return 0;
+}

@@ -1,0 +1,37 @@
+Let f(i) be the minimum coins to reach i 
+
+f(i) = min{1 + f(i - c)}, where c is a coin's value. 
+
+-----
+
+
+int main()
+{
+    int no_of_coins, total;
+    cin >> no_of_coins >> total;
+
+    vector <int> value(no_of_coins + 1);
+    for(int i = 1; i <= no_of_coins; i++)
+    {
+        cin >> value[i];
+    }
+
+    const int oo = 1e9, NOT_POSSIBLE = -1;
+    vector <int> minimum_coins(total + 1, oo);
+    minimum_coins[0] = 0;
+    for(int i = 1; i <= total; i++)
+    {
+        for(int c = 1; c <= no_of_coins; c++)
+        {
+            if(value[c] <= i)
+            {
+                minimum_coins[i] = min(minimum_coins[i], 1 + minimum_coins[i - value[c]]);
+            }
+        }
+    }
+
+    int answer = (minimum_coins[total] == oo ? NOT_POSSIBLE : minimum_coins[total]);
+    cout << answer << "\n";
+
+    return 0;
+}
