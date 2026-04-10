@@ -1,0 +1,123 @@
+Let us build a merge sort tree. 
+Instead of maintaining a sorted vector of all integers in each segment, 
+maintain only the prefix maxima of each segment. 
+
+This solution does not fit in the time limit. 
+
+----
+
+#include <iostream>
+#include <vector>
+ 
+using namespace std;
+
+//This solution is TLE and does not fit in time limits
+ 
+class MergeSortTree
+{
+    #define LEFT(n) (2*n)
+    #define RIGHT(n) (2*n + 1)
+    
+    private:
+    int no_of_elements;
+    vector <vector <int> > tree;
+    
+    void merge(vector <int> &answer, vector <int> &left, vector <int> &right)
+    {
+        for(int l : left)
+        {
+            answer.push_back(l);
+        }
+        
+        int last_answer = (answer.size() == 0 ? 0 : answer.back());
+        int r = upper_bound(right.begin(), right.end(), last_answer) - right.begin();
+        for(;r < right.size(); r++)
+        {
+            answer.push_back(right[r]);
+        }
+    }
+    
+    void build(int n, int left, int right, vector <int> &A)
+    {
+        if(left == right)
+        {
+            tree[n].push_back(A[right]);
+            return;
+        }
+        
+        int mid = (left + right)/2;
+        build(LEFT(n), left, mid, A);
+        build(RIGHT(n), mid + 1, right, A);
+        
+        merge(tree[n], tree[LEFT(n)], tree[RIGHT(n)]);
+    }
+    
+    vector <int> get_range(int n, int left, int right, int query_left, int query_right)
+    {
+        if(query_right < left || right < query_left || query_right < query_left)
+        {
+            return vector <int> {};
+        }
+        
+        if(query_left <= left && right <= query_right)
+        {
+            return tree[n];
+        }
+        
+        int mid = (left + right)/2;
+        vector <int> L = get_range(LEFT(n), left, mid, query_left, query_right);
+        vector <int> R = get_range(RIGHT(n), mid + 1, right, query_left, query_right);
+        vector <int> answer;
+        
+        merge(answer, L, R);
+        return answer;
+    }
+    
+    public:
+    MergeSortTree(vector <int> &A)
+    {
+        no_of_elements = A.size() - 1;
+        tree.resize(4*no_of_elements);
+        build(1, 1, no_of_elements, A);
+    }
+    
+    int get_range_size(int left, int right)
+    {
+        /*cout << "Range [" << left << "," << right << "]\n";
+        vector <int> R = get_range(1, 1, no_of_elements, left, right);
+        for(int r : R)
+        {
+            cout << r << " ";
+        }
+        cout << "\n";*/
+        
+        return get_range(1, 1, no_of_elements, left, right).size();
+    }
+};
+ 
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int no_of_elements, no_of_queries;
+    cin >> no_of_elements >> no_of_queries;
+    
+    vector <int> A(no_of_elements + 1);
+    for(int i = 1; i <= no_of_elements; i++)
+    {
+        cin >> A[i];
+    }
+    
+    MergeSortTree mergeSortTree(A);
+    
+    for(int q = 1; q <= no_of_queries; q++)
+    {
+        int left, right;
+        cin >> left >> right;
+        
+        cout << mergeSortTree.get_range_size(left, right) << "\n";
+    }
+    
+    return 0;
+}
